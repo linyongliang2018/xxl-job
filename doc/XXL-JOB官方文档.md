@@ -710,7 +710,7 @@ docker run -e PARAMS="--spring.datasource.url=jdbc:mysql://127.0.0.1:3306/xxl_jo
     xxl.job.accessToken=
     
     ### 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
-    xxl.job.executor.appname=xxl-job-executor-sample
+    xxl.job.executor.appName=xxl-job-executor-sample
     ### 执行器注册 [选填]：优先使用该配置作为注册地址，为空时使用内嵌服务 ”IP:PORT“ 作为注册地址。从而更灵活的支持容器类型执行器动态IP和动态映射端口问题。
     xxl.job.executor.address=
     ### 执行器IP [选填]：默认为空表示自动获取IP，多网卡时可手动设置指定IP，该IP不会绑定Host仅作为通讯实用；地址信息用于 "执行器注册" 和 "调度中心请求并触发任务"；
@@ -737,7 +737,7 @@ public XxlJobSpringExecutor xxlJobExecutor() {
     logger.info(">>>>>>>>>>> xxl-job config init.");
     XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
     xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
-    xxlJobSpringExecutor.setAppname(appname);
+    xxlJobSpringExecutor.setAppname(appName);
     xxlJobSpringExecutor.setIp(ip);
     xxlJobSpringExecutor.setPort(port);
     xxlJobSpringExecutor.setAccessToken(accessToken);
@@ -762,7 +762,7 @@ public XxlJobSpringExecutor xxlJobExecutor() {
 
 执行器集群部署时，几点要求和建议：
 - 执行器回调地址（xxl.job.admin.addresses）需要保持一致；执行器根据该配置进行执行器自动注册等操作。 
-- 同一个执行器集群内AppName（xxl.job.executor.appname）需要保持一致；调度中心根据该配置动态发现不同集群的在线执行器列表。
+- 同一个执行器集群内AppName（xxl.job.executor.appName）需要保持一致；调度中心根据该配置动态发现不同集群的在线执行器列表。
 
 
 ### 2.5 开发第一个任务“Hello World”       
@@ -2096,7 +2096,7 @@ data: post-data
 - 20、修复bootstrap.min.css.map 404问题；
 - 21、执行器UI交互优化,移除冗余order属性；
 - 22、执行备注消息长度限制，修复数据超长无法存储导致导致回调失败的问题；
-注意：XxlJobSpringExecutor组件个别字段调整：“appName” 调整为 “appname” ，升级时该组件时需要注意；   
+注意：XxlJobSpringExecutor组件个别字段调整：“appName” 调整为 “appName” ，升级时该组件时需要注意；   
 
 ### 7.31 版本 v2.3.0 Release Notes[2021-02-09]
 - 1、【新增】调度过期策略：调度中心错过调度时间的补偿处理策略，包括：忽略、立即补偿触发一次等；

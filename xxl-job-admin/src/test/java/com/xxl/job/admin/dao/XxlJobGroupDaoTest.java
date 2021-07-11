@@ -1,44 +1,47 @@
 package com.xxl.job.admin.dao;
 
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.xxl.job.admin.core.model.XxlJobGroup;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Slf4j
 public class XxlJobGroupDaoTest {
 
-    @Resource
+    //    @Resource
+    @Autowired
     private XxlJobGroupDao xxlJobGroupDao;
 
     @Test
-    public void test(){
-        List<XxlJobGroup> list = xxlJobGroupDao.findAll();
-
-        List<XxlJobGroup> list2 = xxlJobGroupDao.findByAddressType(0);
-
+    public void test() {
+        List<XxlJobGroup> allJobGroupList = new LambdaQueryChainWrapper<>(xxlJobGroupDao).
+                orderByAsc(Arrays.asList(XxlJobGroup::getAppName, XxlJobGroup::getTitle, XxlJobGroup::getId)).list();
+        List<XxlJobGroup> list = new LambdaQueryChainWrapper<>(xxlJobGroupDao).eq(XxlJobGroup::getAddressType, 0).
+                orderByAsc(Arrays.asList(XxlJobGroup::getAppName, XxlJobGroup::getTitle, XxlJobGroup::getId)).list();
         XxlJobGroup group = new XxlJobGroup();
-        group.setAppname("setAppName");
+        group.setAppName("setAppName");
         group.setTitle("setTitle");
         group.setAddressType(0);
         group.setAddressList("setAddressList");
         group.setUpdateTime(new Date());
+        int save = xxlJobGroupDao.insert(group);
 
-        int ret = xxlJobGroupDao.save(group);
+        XxlJobGroup xxlJobGroup = xxlJobGroupDao.selectById(group.getId());
 
-        XxlJobGroup group2 = xxlJobGroupDao.load(group.getId());
-        group2.setAppname("setAppName2");
-        group2.setTitle("setTitle2");
-        group2.setAddressType(2);
-        group2.setAddressList("setAddressList2");
-        group2.setUpdateTime(new Date());
-
-        int ret2 = xxlJobGroupDao.update(group2);
-
-        int ret3 = xxlJobGroupDao.remove(group.getId());
+        xxlJobGroup.setAppName("setAppName2");
+        xxlJobGroup.setTitle("setTitle2");
+        xxlJobGroup.setAddressType(2);
+        xxlJobGroup.setAddressList("setAddressList2");
+        xxlJobGroup.setUpdateTime(new Date());
+        xxlJobGroupDao.updateById(xxlJobGroup);
+        xxlJobGroupDao.deleteById(group.getId());
     }
 
 }

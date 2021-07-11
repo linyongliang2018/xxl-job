@@ -28,7 +28,7 @@ public class XxlJobExecutor  {
     // ---------------------- param ----------------------
     private String adminAddresses;
     private String accessToken;
-    private String appname;
+    private String appName;
     private String address;
     private String ip;
     private int port;
@@ -41,8 +41,8 @@ public class XxlJobExecutor  {
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
-    public void setAppname(String appname) {
-        this.appname = appname;
+    public void setAppname(String appName) {
+        this.appName = appName;
     }
     public void setAddress(String address) {
         this.address = address;
@@ -78,7 +78,7 @@ public class XxlJobExecutor  {
         TriggerCallbackThread.getInstance().start();
 
         // init executor-server
-        initEmbedServer(address, ip, port, appname, accessToken);
+        initEmbedServer(address, ip, port, appName, accessToken);
     }
     public void destroy(){
         // destory executor-server
@@ -135,7 +135,7 @@ public class XxlJobExecutor  {
     // ---------------------- executor-server (rpc provider) ----------------------
     private EmbedServer embedServer = null;
 
-    private void initEmbedServer(String address, String ip, int port, String appname, String accessToken) throws Exception {
+    private void initEmbedServer(String address, String ip, int port, String appName, String accessToken) throws Exception {
 
         // fill ip port
         port = port>0?port: NetUtil.findAvailablePort(9999);
@@ -154,7 +154,7 @@ public class XxlJobExecutor  {
 
         // start
         embedServer = new EmbedServer();
-        embedServer.start(address, port, appname, accessToken);
+        embedServer.start(address, port, appName, accessToken);
     }
 
     private void stopEmbedServer() {

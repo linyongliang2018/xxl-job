@@ -15,16 +15,43 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author xuxueli 2018-07-03 21:08:07
  */
 public class JobTriggerPoolHelper {
-    private static Logger logger = LoggerFactory.getLogger(JobTriggerPoolHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobTriggerPoolHelper.class);
 
 
     // ---------------------- trigger pool ----------------------
-
+    private static final JobTriggerPoolHelper helper = new JobTriggerPoolHelper();
+    private final ConcurrentMap<Integer, AtomicInteger> jobTimeoutCountMap = new ConcurrentHashMap<>();
     // fast/slow thread pool
     private ThreadPoolExecutor fastTriggerPool = null;
     private ThreadPoolExecutor slowTriggerPool = null;
+    // job timeout count
+    private volatile long minTim = System.currentTimeMillis() / 60000;     // ms > min
 
-    public void start(){
+    public static void toStart() {
+        helper.start();
+    }
+
+    public static void toStop() {
+        helper.stop();
+    }
+
+
+    // ---------------------- helper ----------------------
+
+    /**
+     * @param jobId
+     * @param triggerType
+     * @param failRetryCount        >=0: use this param
+     *                              <0: use param from job info config
+     * @param executorShardingParam
+     * @param executorParam         null: use job param
+     *                              not null: cover job param
+     */
+    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam, String addressList) {
+        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam, addressList);
+    }
+
+    public void start() {
         fastTriggerPool = new ThreadPoolExecutor(
                 10,
                 XxlJobAdminConfig.getAdminConfig().getTriggerPoolFastMax(),
@@ -52,19 +79,12 @@ public class JobTriggerPoolHelper {
                 });
     }
 
-
     public void stop() {
         //triggerPool.shutdown();
         fastTriggerPool.shutdownNow();
         slowTriggerPool.shutdownNow();
         logger.info(">>>>>>>>> xxl-job trigger thread pool shutdown success.");
     }
-
-
-    // job timeout count
-    private volatile long minTim = System.currentTimeMillis()/60000;     // ms > min
-    private volatile ConcurrentMap<Integer, AtomicInteger> jobTimeoutCountMap = new ConcurrentHashMap<>();
-
 
     /**
      * add trigger
@@ -79,7 +99,7 @@ public class JobTriggerPoolHelper {
         // choose thread pool
         ThreadPoolExecutor triggerPool_ = fastTriggerPool;
         AtomicInteger jobTimeoutCount = jobTimeoutCountMap.get(jobId);
-        if (jobTimeoutCount!=null && jobTimeoutCount.get() > 10) {      // job-timeout 10 times in 1 min
+        if (jobTimeoutCount != null && jobTimeoutCount.get() > 10) {      // job-timeout 10 times in 1 min
             triggerPool_ = slowTriggerPool;
         }
 
@@ -98,14 +118,14 @@ public class JobTriggerPoolHelper {
                 } finally {
 
                     // check timeout-count-map
-                    long minTim_now = System.currentTimeMillis()/60000;
+                    long minTim_now = System.currentTimeMillis() / 60000;
                     if (minTim != minTim_now) {
                         minTim = minTim_now;
                         jobTimeoutCountMap.clear();
                     }
 
                     // incr timeout-count-map
-                    long cost = System.currentTimeMillis()-start;
+                    long cost = System.currentTimeMillis() - start;
                     if (cost > 500) {       // ob-timeout threshold 500ms
                         AtomicInteger timeoutCount = jobTimeoutCountMap.putIfAbsent(jobId, new AtomicInteger(1));
                         if (timeoutCount != null) {
@@ -117,34 +137,6 @@ public class JobTriggerPoolHelper {
 
             }
         });
-    }
-
-
-
-    // ---------------------- helper ----------------------
-
-    private static JobTriggerPoolHelper helper = new JobTriggerPoolHelper();
-
-    public static void toStart() {
-        helper.start();
-    }
-    public static void toStop() {
-        helper.stop();
-    }
-
-    /**
-     * @param jobId
-     * @param triggerType
-     * @param failRetryCount
-     * 			>=0: use this param
-     * 			<0: use param from job info config
-     * @param executorShardingParam
-     * @param executorParam
-     *          null: use job param
-     *          not null: cover job param
-     */
-    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam, String addressList) {
-        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam, addressList);
     }
 
 }

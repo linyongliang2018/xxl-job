@@ -31,6 +31,8 @@
 		<spring-boot.version>2.4.5</spring-boot.version>
 
 		<mybatis-spring-boot-starter.version>2.1.4</mybatis-spring-boot-starter.version>
+		<mybatis-plus-spring-boot-starter.version>3.4.3.1</mybatis-plus-spring-boot-starter.version>
+		<lombok.version>1.18.20</lombok.version>
 		<mysql-connector-java.version>8.0.24</mysql-connector-java.version>
 
 		<slf4j-api.version>1.7.30</slf4j-api.version>

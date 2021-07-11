@@ -470,8 +470,8 @@ The concret content of configuration file as follows:
     ### xxl-job admin address list：xxl-job-admin address list: Multiple addresses are separated by commas,this address is used for "heart beat and register" and "task execution result callback" between the executor and xxl-job-admin.
     xxl.job.admin.addresses=http://127.0.0.1:8080/xxl-job-admin
     
-    ### xxl.job.executor.appname is used to group by executors
-    xxl.job.executor.appname=xxl-job-executor-sample
+    ### xxl.job.executor.appName is used to group by executors
+    xxl.job.executor.appName=xxl-job-executor-sample
     ### xxl.job.executor.ip :1,used to register with xxl-job-admin;2,xxl-job-admin dispatch task to executor through it;3,if it is blank executor will get ip automatically, multi network card need to be configured.
     xxl.job.executor.ip=
     ### xxl.job.executor.port :the port of the executor runned by,if multiple executor instance run on the same computer the port must different with each other
@@ -503,7 +503,7 @@ Concrete contet describe as follows：
     <!-- executor port[required] -->
     <property name="port" value="${xxl.job.executor.port}" />
     <!-- executor AppName[required]，auto register will be closed if it blank -->
-    <property name="appname" value="${xxl.job.executor.appname}" />
+    <property name="appName" value="${xxl.job.executor.appName}" />
     <!-- register center address of executor [required]，auto register will be closed if it blank -->
     <property name="adminAddresses" value="${xxl.job.admin.addresses}" />
     <!-- log path of executor[required] -->
@@ -662,7 +662,7 @@ If you want to create a new executor,please click "+新增执行器" button:
 
 ### Description of executor attributes
 
-    Appname: the unique identity of the executor cluster,executor will registe automatically and periodically by appname so that it can be scheduled.
+    Appname: the unique identity of the executor cluster,executor will registe automatically and periodically by appName so that it can be scheduled.
     名称: the name of ther executor,it is used to describe the executor.
     排序: the order of executor,it will be used in the place where need to select executor.
     注册方式:which way the schedule center used to acquire executor address through;
